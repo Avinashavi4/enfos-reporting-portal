@@ -1,0 +1,23 @@
+# Project name keeps everything grouped as "enfos" in Docker Desktop.
+name: enfos
+
+services:
+  backend:
+    container_name: enfos-api
+    build: ./backend
+    # Wait until the API socket accepts connections before nginx starts
+    # proxying to it, so the first page load never hits a 502.
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/localhost/8080"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+
+  frontend:
+    container_name: enfos-web
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
