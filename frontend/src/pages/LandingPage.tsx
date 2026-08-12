@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { ReportMeta } from "../api/types";
 import { EmptyState, ErrorState, LoadingState } from "../components/AsyncStates";
+import { ReportIcon } from "../components/ReportIcon";
 import { SearchInput } from "../components/SearchInput";
 import { useApi } from "../hooks/useApi";
 import { formatDate } from "../lib/format";
@@ -22,54 +23,81 @@ export function LandingPage() {
     );
   }, [catalog, query]);
 
+  const total = catalog.status === "success" ? catalog.data.length : 0;
+
   return (
-    <main className="page">
-      <header className="page-head">
-        <h1>Reports</h1>
-        <p className="page-sub">
-          Browse the available reports and open one to explore its data.
-        </p>
-      </header>
+    <main className="page landing">
+      <div className="landing__body">
+        <header className="landing__head">
+          <p className="eyebrow">Internal Reporting</p>
+          <h1>Reports</h1>
+          <p className="page-sub">
+            Browse the available reports and open one to explore its data.
+          </p>
+        </header>
 
-      <SearchInput
-        value={query}
-        onChange={setQuery}
-        placeholder="Search reports…"
-        autoFocus
-      />
-
-      {catalog.status === "loading" && <LoadingState label="Loading reports…" />}
-
-      {catalog.status === "error" && (
-        <ErrorState message={catalog.message} onRetry={catalog.retry} />
-      )}
-
-      {catalog.status === "success" &&
-        (visible.length === 0 ? (
-          <EmptyState
-            title={`No reports match “${query}”`}
-            detail="Try a different name — for example Users, Departments, or Projects."
+        <div className="landing__tools">
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Search reports…"
+            autoFocus
           />
-        ) : (
-          <ul className="card-grid">
-            {visible.map((report) => (
-              <li key={report.id}>
-                <Link className="card" to={`/reports/${report.id}`}>
-                  <div className="card__top">
-                    <h2>{report.name}</h2>
-                    <span className="card__count">
-                      {report.rowCount.toLocaleString()} rows
-                    </span>
-                  </div>
-                  <p className="card__desc">{report.description}</p>
-                  <p className="card__meta">
-                    Updated {formatDate(report.lastUpdated)}
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ))}
+          {catalog.status === "success" && (
+            <span className="landing__count">
+              {visible.length === total
+                ? `${total} ${total === 1 ? "report" : "reports"}`
+                : `${visible.length} of ${total}`}
+            </span>
+          )}
+        </div>
+
+        {catalog.status === "loading" && (
+          <LoadingState label="Loading reports…" />
+        )}
+
+        {catalog.status === "error" && (
+          <ErrorState message={catalog.message} onRetry={catalog.retry} />
+        )}
+
+        {catalog.status === "success" &&
+          (visible.length === 0 ? (
+            <EmptyState
+              title={`No reports match “${query}”`}
+              detail="Try a different name — for example Users, Departments, or Projects."
+            />
+          ) : (
+            <ul className="card-grid">
+              {visible.map((report) => (
+                <li key={report.id}>
+                  <Link className="rcard" to={`/reports/${report.id}`}>
+                    <div className="rcard__top">
+                      <ReportIcon reportId={report.id} />
+                      <span className="rcard__go" aria-hidden="true">
+                        →
+                      </span>
+                    </div>
+                    <h2 className="rcard__name">{report.name}</h2>
+                    <p className="rcard__desc">{report.description}</p>
+                    <div className="rcard__foot">
+                      <span className="rcard__rows">
+                        {report.rowCount.toLocaleString()} rows
+                      </span>
+                      <span className="rcard__sep" aria-hidden="true">
+                        ·
+                      </span>
+                      <span>Updated {formatDate(report.lastUpdated)}</span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ))}
+      </div>
+
+      <footer className="landing__foot">
+        Enfos Reporting · internal tool
+      </footer>
     </main>
   );
 }
