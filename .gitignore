@@ -1,0 +1,12 @@
+# Java / Maven
+backend/target/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Editor / OS noise
+.idea/
+.vscode/
+*.iml
+.DS_Store
