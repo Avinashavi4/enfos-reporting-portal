@@ -1,0 +1,23 @@
+Enfos Engineering Take-Home — Reporting Landing Page
+Submitted by: Avinash Gattineni
+
+Repository: https://github.com/Avinashavi4/enfos-reporting-portal
+
+Run it (single command; Docker is the only prerequisite):
+    git clone https://github.com/Avinashavi4/enfos-reporting-portal
+    cd enfos-reporting-portal
+    docker compose up --build
+Then open http://localhost:3000
+
+What's included:
+- React + TypeScript frontend (Vite): searchable reporting landing page and a
+  sortable/filterable table view per report, with loading, empty, and error states.
+- Java + Spring Boot API: GET /api/reports plus /users, /departments, /projects.
+- One-command run via Docker Compose (multi-stage builds; nginx serves the SPA
+  and proxies /api to the backend — single origin, no CORS).
+- README: setup/run for both halves, the API, and my assumptions & tradeoffs.
+- docs/screenshots/: landing, search, tables, and the loading/empty/error states,
+  plus mobile viewports.
+- docs/DECISIONS.md: a walkthrough of my design decisions and the alternatives I
+  weighed (data-fetch lifecycle, config-driven tables, the proxy-over-CORS choice,
+  the data-store interface seam, client vs. server-side sorting).
